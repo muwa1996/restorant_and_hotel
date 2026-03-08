@@ -1,0 +1,366 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const lessonMatch = document.title.match(/Lesson (\d+):/);
+    const lessonNum = lessonMatch ? lessonMatch[1] : '1';
+
+    let questions;
+
+    const allQuestions = {
+        "1": [ // Making a Reservation
+            { q: "What is the first step when calling for a reservation?", a: "Stating the date and time", options: ["Asking for the bill", "Stating the date and time", "Complaining about food"] },
+            { q: "What does 'party of four' mean?", a: "Four people in total", options: ["Four people in total", "A party with music", "Four separate tables"] },
+            { q: "Which word describes a table that is already taken?", a: "Reserved", options: ["Vacant", "Reserved", "Available"] },
+            { q: "What should you do if you are running 15 minutes late?", a: "Call the restaurant", options: ["Ignore it", "Call the restaurant", "Ask for a refund"] },
+            { q: "A 'no-show' fee is charged when:", a: "You don't show up without cancelling", options: ["You arrive early", "You don't show up without cancelling", "You order dessert"] },
+            { q: "What is a 'booth' in a restaurant?", a: "A semi-enclosed seating area", options: ["A storage room", "A semi-enclosed seating area", "The kitchen entrance"] },
+            { q: "When is the 'off-peak' time usually?", a: "Between lunch and dinner", options: ["Saturday night", "Between lunch and dinner", "7:00 PM"] },
+            { q: "What does 'fully booked' mean?", a: "No more tables are available", options: ["The books are heavy", "No more tables are available", "The staff is tired"] },
+            { q: "Why might a restaurant ask for a credit card number?", a: "To secure the booking against no-shows", options: ["To buy groceries", "To secure the booking against no-shows", "To tip the chef"] }
+        ],
+        "2": [ // Booking a Hotel Room
+            { q: "What does 'occupancy' refer to in a hotel?", a: "The number of people in a room", options: ["The hotel's location", "The number of people in a room", "The price of breakfast"] },
+            { q: "A 'suite' is usually:", a: "Larger than a standard room", options: ["Smaller than a standard room", "Larger than a standard room", "Located in the basement"] },
+            { q: "What is a 'non-refundable' rate?", a: "You won't get money back if you cancel", options: ["Free of charge", "You won't get money back if you cancel", "A discount for kids"] },
+            { q: "What is 'half-board'?", a: "Breakfast and one other meal included", options: ["Half a bed", "Breakfast and one other meal included", "No meals included"] },
+            { q: "A 'Twin Room' has:", a: "Two separate single beds", options: ["One large bed", "Two separate single beds", "Three beds"] },
+            { q: "What is the 'rack rate'?", a: "The standard price without discounts", options: ["Discounted price", "The standard price without discounts", "Price for luggage"] },
+            { q: "What does 'check-in' time mean?", a: "The earliest time you can enter your room", options: ["When you leave", "The earliest time you can enter your room", "When the gym opens"] },
+            { q: "What is a 'complimentary' service?", a: "A service provided for free", options: ["A paid service", "A service provided for free", "A mandatory service"] },
+            { q: "Why do hotels ask for 'identification'?", a: "To verify your identity and booking", options: ["To take a photo", "To verify your identity and booking", "To sell it"] }
+        ],
+        "3": [ // Arriving and Being Seated
+            { q: "What should you say to the 'host' upon arrival?", a: "I have a reservation under [Name]", options: ["Give me food now", "I have a reservation under [Name]", "Where is the exit?"] },
+            { q: "What is a 'host' or 'hostess'?", a: "The person who greets and seats guests", options: ["The person who cooks", "The person who greets and seats guests", "The dishwasher"] },
+            { q: "What does 'Walk-in' mean?", a: "Arriving without a reservation", options: ["Walking inside the kitchen", "Arriving without a reservation", "Leaving without paying"] },
+            { q: "If you want a quieter spot, you might ask for:", a: "A corner table", options: ["A table by the DJ", "A corner table", "A table by the bar"] },
+            { q: "What is a 'cloakroom' used for?", a: "Storing coats and bags", options: ["Storing food", "Storing coats and bags", "Washing dishes"] },
+            { q: "What does 'Wait to be seated' mean?", a: "Don't pick your own table", options: ["Sit anywhere", "Don't pick your own table", "Wait for the bill"] },
+            { q: "What is 'table turnover'?", a: "The time spent by one party at a table", options: ["Flipping a table over", "The time spent by one party at a table", "Moving a table"] },
+            { q: "A 'cover' in restaurant terms refers to:", a: "A single guest", options: ["A tablecloth", "A single guest", "The roof"] },
+            { q: "What is a 'high chair' for?", a: "Young children/infants", options: ["The chef", "Young children/infants", "VIP guests"] }
+        ],
+        "4": [ // Checking In at the Desk
+            { q: "What is the 'front desk'?", a: "The main reception area", options: ["The kitchen counter", "The main reception area", "The laundry room"] },
+            { q: "What is a 'registration card'?", a: "A form with guest details and signature", options: ["A credit card", "A form with guest details and signature", "A menu"] },
+            { q: "What is a 'room key' or 'key card'?", a: "An electronic card to open the room", options: ["A metal key", "An electronic card to open the room", "A map"] },
+            { q: "What is an 'incidentals' deposit?", a: "Money held for extra charges", options: ["Payment for the room", "Money held for extra charges", "A tip"] },
+            { q: "What is the 'bellhop' or 'porter' responsible for?", a: "Carrying guest luggage", options: ["Cleaning rooms", "Carrying guest luggage", "Cooking breakfast"] },
+            { q: "What is a 'late check-out'?", a: "Leaving the room after the usual time", options: ["Arriving at night", "Leaving the room after the usual time", "Staying forever"] },
+            { q: "What is 'concierge' service?", a: "Assistance with bookings and local info", options: ["Laundry service", "Assistance with bookings and local info", "Room cleaning"] },
+            { q: "What does 'valet parking' mean?", a: "Staff park your car for you", options: ["Self-parking", "Staff park your car for you", "No parking"] },
+            { q: "What is a 'wake-up call'?", a: "A phone call to wake you up", options: ["A call from your boss", "A phone call to wake you up", "A marketing call"] }
+        ],
+        "5": [ // Understanding the Menu
+            { q: "What is an 'appetizer'?", a: "A small dish served before the main course", options: ["The main course", "A small dish served before the main course", "Dessert"] },
+            { q: "What does 'à la carte' mean?", a: "Ordering separate dishes from the menu", options: ["A fixed price for everything", "Ordering separate dishes from the menu", "A secret menu"] },
+            { q: "What is a 'tasting menu'?", a: "Multiple small courses showcasing the chef", options: ["Testing the food for poison", "Multiple small courses showcasing the chef", "A kids menu"] },
+            { q: "What are 'allergens'?", a: "Substances that cause allergic reactions", options: ["Spices", "Substances that cause allergic reactions", "Vitamins"] },
+            { q: "What is a 'side dish'?", a: "A small portion served with the main meal", options: ["The main meal", "A small portion served with the main meal", "The first course"] },
+            { q: "What does 'entrée' mean in many countries?", a: "The main course", options: ["The exit", "The main course", "The starter"] },
+            { q: "What is 'daily special'?", a: "A dish not on the regular menu", options: ["The cheapest dish", "A dish not on the regular menu", "A free dish"] },
+            { q: "What does 'seasonal' refer to?", a: "Ingredients available at this time of year", options: ["Expensive ingredients", "Ingredients available at this time of year", "Imported food"] },
+            { q: "What is 'prix fixe'?", a: "A multi-course meal at a fixed price", options: ["A broken menu", "A multi-course meal at a fixed price", "Pay what you want"] }
+        ],
+        "6": [ // Ordering Room Service
+            { q: "How do you usually order room service?", a: "By phone using a specific extension", options: ["Shouting in the hall", "By phone using a specific extension", "Emailing the manager"] },
+            { q: "What is a 'service charge'?", a: "An extra fee for delivering the food", options: ["A tip for the chef", "An extra fee for delivering the food", "The price of the food"] },
+            { q: "Where is the room service menu usually found?", a: "In the room directory or on the TV", options: ["Under the bed", "In the room directory or on the TV", "In the elevator"] },
+            { q: "What should you do with the tray when finished?", a: "Put it outside the door or call for pickup", options: ["Keep it as a souvenir", "Put it outside the door or call for pickup", "Wash it in the sink"] },
+            { q: "Can you order drinks via room service?", a: "Yes, usually both hot and cold", options: ["Only water", "Yes, usually both hot and cold", "No, go to the bar"] },
+            { q: "What is '24-hour room service'?", a: "Service available day and night", options: ["Service for 24 minutes", "Service available day and night", "Free service"] },
+            { q: "What is a 'breakfast hanger'?", a: "A menu you hang on your door handle", options: ["A coat hanger", "A menu you hang on your door handle", "A type of bread"] },
+            { q: "Is 'gratuity' included in room service bills?", a: "Sometimes, check the bill carefully", options: ["Always", "Sometimes, check the bill carefully", "Never"] },
+            { q: "What if you have a 'Do Not Disturb' sign on?", a: "Room service will likely not knock", options: ["They will enter anyway", "Room service will likely not knock", "They will shout"] }
+        ],
+        "7": [ // Ordering Appetizers and Drinks
+            { q: "What is 'sparkling water'?", a: "Water with carbonation (bubbles)", options: ["Tap water", "Water with carbonation (bubbles)", "Hot water"] },
+            { q: "What is an 'apéritif'?", a: "An alcoholic drink taken before a meal", options: ["A digestive", "An alcoholic drink taken before a meal", "Dessert wine"] },
+            { q: "What is a 'mocktail'?", a: "A non-alcoholic mixed drink", options: ["A funny drink", "A non-alcoholic mixed drink", "A strong cocktail"] },
+            { q: "What does 'on the rocks' mean?", a: "With ice", options: ["With salt", "With ice", "Pure spirit"] },
+            { q: "What are 'hors d'oeuvres'?", a: "Small appetizers served before a meal", options: ["The main course", "Small appetizers served before a meal", "Large desserts"] },
+            { q: "What is a 'wine list'?", a: "A menu showing available wines", options: ["A list of prices", "A menu showing available wines", "The staff's names"] },
+            { q: "What is 'house wine'?", a: "The standard, affordable wine of the restaurant", options: ["Wine made at home", "The standard, affordable wine of the restaurant", "Very expensive wine"] },
+            { q: "What does 'neat' mean for a drink?", a: "Served without ice or mixers", options: ["Mixed with juice", "Served without ice or mixers", "Very clean glass"] },
+            { q: "What is 'decanting' wine?", a: "Pouring wine into a vessel to aerate it", options: ["Drinking it fast", "Pouring wine into a vessel to aerate it", "Freezing it"] }
+        ],
+        "8": [ // Housekeeping and Cleanliness
+            { q: "What is 'housekeeping'?", a: "The department responsible for cleaning", options: ["The kitchen staff", "The department responsible for cleaning", "The security team"] },
+            { q: "What does 'DND' stand for?", a: "Do Not Disturb", options: ["Dinner and Drinks", "Do Not Disturb", "During Next Day"] },
+            { q: "What are 'toiletries'?", a: "Soap, shampoo, and other personal items", options: ["Bed sheets", "Soap, shampoo, and other personal items", "Towels"] },
+            { q: "What is the 'turndown service'?", a: "Preparing the bed for the night", options: ["Turning the light off", "Preparing the bed for the night", "Fixing the TV"] },
+            { q: "What should you do if you need extra towels?", a: "Call housekeeping or the front desk", options: ["Ask the chef", "Call housekeeping or the front desk", "Go to the laundry"] },
+            { q: "What is a 'linen' change?", a: "Replacing bed sheets and pillowcases", options: ["Cleaning the floor", "Replacing bed sheets and pillowcases", "Fixing curtains"] },
+            { q: "What is an 'amenity'?", a: "A useful or pleasant feature of the room", options: ["A billing error", "A useful or pleasant feature of the room", "A complaint"] },
+            { q: "Where should you put valuables?", a: "In the in-room safe", options: ["Under the pillow", "In the in-room safe", "In the fridge"] },
+            { q: "What is a 'complaint' about cleanliness?", a: "Stating that the room is dirty", options: ["Asking for more food", "Stating that the room is dirty", "Checking out early"] }
+        ],
+        "9": [ // Mains and Dietary Restrictions
+            { q: "What does 'vegan' mean?", a: "No animal products at all", options: ["No meat but eggs allowed", "No animal products at all", "Only organic food"] },
+            { q: "What is 'gluten-free'?", a: "No wheat, barley, or rye", options: ["No sugar", "No wheat, barley, or rye", "No dairy"] },
+            { q: "What is 'halal' or 'kosher'?", a: "Prepared according to religious laws", options: ["Vegetarian", "Prepared according to religious laws", "Very spicy"] },
+            { q: "What does 'rare', 'medium', 'well-done' refer to?", a: "The level of cooking for meat", options: ["The size of the portion", "The level of cooking for meat", "The price of the dish"] },
+            { q: "What is a 'signature dish'?", a: "A unique dish the chef is famous for", options: ["A dish you have to sign for", "A unique dish the chef is famous for", "The cheapest dish"] },
+            { q: "What is a 'garnish'?", a: "An edible decoration on the plate", options: ["A side dish", "An edible decoration on the plate", "The main ingredient"] },
+            { q: "What does 'dairy-free' exclude?", a: "Milk, butter, and cheese", options: ["Meat", "Milk, butter, and cheese", "Eggs"] },
+            { q: "What is 'sustainability' in food?", a: "Environmentally friendly sourcing", options: ["Cheap food", "Environmentally friendly sourcing", "Fast food"] },
+            { q: "What is a 'catch of the day'?", a: "Fresh fish caught that day", options: ["A discounted dish", "Fresh fish caught that day", "A secret ingredient"] }
+        ],
+        "10": [ // Using Hotel Facilities
+            { q: "What is a 'fitness center'?", a: "The hotel gym", options: ["The business center", "The hotel gym", "The sauna"] },
+            { q: "Where is the 'infinity pool' usually?", a: "On a high floor or overlooking a view", options: ["In the basement", "On a high floor or overlooking a view", "Near the laundry"] },
+            { q: "What does 'complimentary Wi-Fi' mean?", a: "Free internet access", options: ["Paid internet", "Free internet access", "Slow internet"] },
+            { q: "What is a 'spa'?", a: "A facility for health and relaxation treatments", options: ["A cooking school", "A facility for health and relaxation treatments", "A parking lot"] },
+            { q: "What is the 'business center' for?", a: "Printing, computers, and meetings", options: ["Selling snacks", "Printing, computers, and meetings", "Buying clothes"] },
+            { q: "What is an 'executive lounge'?", a: "A private area for specific guest categories", options: ["A public lobby", "A private area for specific guest categories", "A smoking area"] },
+            { q: "What are 'operating hours'?", a: "The times a facility is open", options: ["The price list", "The times a facility is open", "The staff names"] },
+            { q: "What is a 'sauna'?", a: "A room for heat and steam therapy", options: ["A cold pool", "A room for heat and steam therapy", "A gym machine"] },
+            { q: "What is a 'kids club'?", a: "Entertainment and supervision for children", options: ["A nightclub", "Entertainment and supervision for children", "A sports bar"] }
+        ],
+        "11": [ // Wine Selection and Etiquette
+            { q: "What is a 'sommelier'?", a: "A trained wine professional", options: ["A waiter", "A trained wine professional", "A chef"] },
+            { q: "What does 'body' mean in wine?", a: "The weight or feel of the wine in the mouth", options: ["The shape of the bottle", "The weight or feel of the wine in the mouth", "The color"] },
+            { q: "What is 'tannin'?", a: "Substance that gives a dry feeling in the mouth", options: ["A type of sugar", "Substance that gives a dry feeling in the mouth", "A grape variety"] },
+            { q: "What is 'pairing'?", a: "Matching wine with specific foods", options: ["Cleaning glasses", "Matching wine with specific foods", "Drinking two glasses"] },
+            { q: "What is a 'corkage' fee?", a: "A fee for bringing your own wine", options: ["The price of a cork", "A fee for bringing your own wine", "A tip for the sommelier"] },
+            { q: "What does 'dry' wine mean?", a: "Wine with very little sugar", options: ["Wine that is old", "Wine with very little sugar", "Wine that is cold"] },
+            { q: "What is a 'vintage'?", a: "The year the grapes were harvested", options: ["A style of bottle", "The year the grapes were harvested", "The label design"] },
+            { q: "How should you hold a wine glass?", a: "By the stem", options: ["By the bowl", "By the stem", "With two hands"] },
+            { q: "What is 'swirling' wine for?", a: "Releasing aromas", options: ["Mixing it", "Releasing aromas", "Cooling it down"] }
+        ],
+        "12": [ // Requesting Repairs or Upgrades
+            { q: "What is an 'upgrade'?", a: "Moving to a better room category", options: ["Moving to a smaller room", "Moving to a better room category", "Getting a discount"] },
+            { q: "What is 'maintenance'?", a: "The department that fixes things", options: ["The cleaning team", "The department that fixes things", "Front desk"] },
+            { q: "How to report a broken AC?", a: "Call the front desk immediately", options: ["Wait until checkout", "Call the front desk immediately", "Fix it yourself"] },
+            { q: "What is a 'technical issue'?", a: "A problem with electronics or appliances", options: ["A bill error", "A problem with electronics or appliances", "Missing towels"] },
+            { q: "What does 'out of order' mean?", a: "The facility or room is not working", options: ["Arriving late", "The facility or room is not working", "A messy room"] },
+            { q: "A 'clogged' drain means:", a: "The water won't go down", options: ["A dirty floor", "The water won't go down", "A broken light"] },
+            { q: "What is 'compensation'?", a: "Something provided to make up for a problem", options: ["The total bill", "Something provided to make up for a problem", "A new reservation"] },
+            { q: "What is 'room move'?", a: "Transferring to a different room", options: ["Packing bags", "Transferring to a different room", "Checking out"] },
+            { q: "What is a 'follow-up'?", a: "Checking if the problem was solved", options: ["Calling a friend", "Checking if the problem was solved", "Reading a menu"] }
+        ],
+        "13": [ // Handling Food Issues Correctly
+            { q: "What if your food is 'undercooked'?", a: "Politely ask to have it cooked more", options: ["Eat it anyway", "Politely ask to have it cooked more", "Leave the restaurant"] },
+            { q: "What is a 'foreign object' in food?", a: "Something that shouldn't be there (e.g. hair)", options: ["A new spice", "Something that shouldn't be there (e.g. hair)", "An appetizer"] },
+            { q: "How to handle a wrong order?", a: "Inform the waiter immediately", options: ["Wait for the bill", "Inform the waiter immediately", "Complain on social media"] },
+            { q: "What is a 'cold' dish that should be hot?", a: "A temperature issue", options: ["A salad", "A temperature issue", "A dessert"] },
+            { q: "What if the bill is incorrect?", a: "Ask the waiter to review the charges", options: ["Pay it anyway", "Ask the waiter to review the charges", "Call the police"] },
+            { q: "What is 'over-seasoned' food?", a: "Too much salt or spice", options: ["Under-cooked", "Too much salt or spice", "Very fresh food"] },
+            { q: "How to leave a 'polite' complaint?", a: "Speak calmly to the manager", options: ["Shout at the waiter", "Speak calmly to the manager", "Throw the plate"] },
+            { q: "What is 'comping' a meal?", a: "Removing it from the bill (free of charge)", options: ["Adding extra charges", "Removing it from the bill (free of charge)", "Changing the recipe"] },
+            { q: "What are 'dietary cross-contaminations'?", a: "Unintended contact between different foods", options: ["Mixing drinks", "Unintended contact between different foods", "Washing hands"] }
+        ],
+        "14": [ // Local Transport and Shuttles
+            { q: "What is a 'shuttle bus'?", a: "A free or cheap hotel transport", options: ["A public bus", "A free or cheap hotel transport", "A private taxi"] },
+            { q: "What is 'airport transfer'?", a: "Transport between the hotel and airport", options: ["A flight booking", "Transport between the hotel and airport", "A luggage service"] },
+            { q: "How to book a 'taxi' from the hotel?", a: "Ask the concierge or front desk", options: ["Stop one on the street", "Ask the concierge or front desk", "Wait in the gym"] },
+            { q: "What is a 'luxury car' service?", a: "Private transport in a high-end vehicle", options: ["The shuttle", "Private transport in a high-end vehicle", "Public train"] },
+            { q: "What is a 'pick-up point'?", a: "The designated area to wait for transport", options: ["The guest's room", "The designated area to wait for transport", "The kitchen"] },
+            { q: "What does 'fixed rate' mean for a taxi?", a: "A set price instead of a meter", options: ["A broken meter", "A set price instead of a meter", "A tip"] },
+            { q: "What is a 'ride-sharing' app?", a: "Uber, Lyft, etc.", options: ["A hotel shuttle", "Uber, Lyft, etc.", "A rental car"] },
+            { q: "What is 'public transport'?", a: "Buses, trains, and subways", options: ["Private cars", "Buses, trains, and subways", "Walking"] },
+            { q: "What is a 'walking tour'?", a: "Exploring local sites on foot", options: ["A bus tour", "Exploring local sites on foot", "A taxi ride"] }
+        ],
+        "15": [ // Paying the Bill and Gratuity
+            { q: "What is 'gratuity'?", a: "A tip for the service", options: ["The total bill", "A tip for the service", "A tax"] },
+            { q: "What is 'VAT' or 'GST'?", a: "Value-added tax on the bill", options: ["A drink price", "Value-added tax on the bill", "A discount"] },
+            { q: "What is 'splitting the bill'?", a: "Dividing the cost between guests", options: ["Breaking the paper", "Dividing the cost between guests", "Paying twice"] },
+            { q: "What does 'service included' mean?", a: "The tip is already in the price", options: ["Free food", "The tip is already in the price", "You must tip more"] },
+            { q: "What is a 'receipt'?", a: "A document proving payment", options: ["A menu", "A document proving payment", "A reservation"] },
+            { q: "How to ask for the bill?", a: "The bill/check, please", options: ["Money time!", "The bill/check, please", "Bye!"] },
+            { q: "What are 'accepted payment methods'?", a: "Cards, cash, or mobile pay", options: ["Only gold", "Cards, cash, or mobile pay", "Promises"] },
+            { q: "What is a 'service charge' on the bill?", a: "A mandatory fee added by the restaurant", options: ["A voluntary tip", "A mandatory fee added by the restaurant", "A drink price"] },
+            { q: "What is 'cashback'?", a: "Getting cash back when paying by card", options: ["Losing your card", "Getting cash back when paying by card", "A discount"] }
+        ],
+        "16": [ // Security and Valuables
+            { q: "What is an 'in-room safe'?", a: "A secure box for your valuables", options: ["A fridge", "A secure box for your valuables", "A drawer"] },
+            { q: "What is '24/7 security'?", a: "Security staff present at all times", options: ["Open doors", "Security staff present at all times", "No security"] },
+            { q: "What are 'CCTV' cameras?", a: "Surveillance cameras for safety", options: ["Television channels", "Surveillance cameras for safety", "Air conditioners"] },
+            { q: "What's the procedure for a 'lost key'?", a: "Alert the front desk immediately", options: ["Wait outside", "Alert the front desk immediately", "Break the door"] },
+            { q: "What is a 'fire evacuation' plan?", a: "Instructions for leaving during an emergency", options: ["A cooking guide", "Instructions for leaving during an emergency", "A gym schedule"] },
+            { q: "What's an 'unauthorized' entry?", a: "Someone entering who shouldn't be there", options: ["Room service", "Someone entering who shouldn't be there", "Owner's visit"] },
+            { q: "Why use 'secondary' locks on doors?", a: "For extra safety while inside", options: ["To stay forever", "For extra safety while inside", "To block staff"] },
+            { q: "What does 'valet security' mean?", a: "Security for parked cars", options: ["Cleaning cars", "Security for parked cars", "No insurance"] },
+            { q: "What's an 'emergency exit'?", a: "A designated door for leaving quickly", options: ["The main entrance", "A designated door for leaving quickly", "The elevator"] }
+        ],
+        "17": [ // Table Manners and Etiquette
+            { q: "Where should you place your 'napkin'?", a: "On your lap", options: ["In your collar", "On your lap", "On the floor"] },
+            { q: "Which fork do you use 'first'?", a: "The one furthest from the plate", options: ["The smallest one", "The one furthest from the plate", "Any fork"] },
+            { q: "How do you signal you are 'finished'?", a: "Place knife and fork parallel on the plate", options: ["Cross them", "Place knife and fork parallel on the plate", "Push the plate away"] },
+            { q: "What to do with your 'phone'?", a: "Keep it on silent and out of sight", options: ["Put it on the table", "Keep it on silent and out of sight", "Talk loudly"] },
+            { q: "How to 'summon' a waiter politely?", a: "Catch their eye or raise a hand slightly", options: ["Shout 'Hey!'", "Catch their eye or raise a hand slightly", "Snap fingers"] },
+            { q: "Which side is the 'bread plate' on?", a: "Left side", options: ["Right side", "Left side", "Under the plate"] },
+            { q: "What is 'clinking' glasses?", a: "Touching glasses together during a toast", options: ["Breaking them", "Touching glasses together during a toast", "Washing them"] },
+            { q: "How to 'excuse' yourself from the table?", a: "I'll be right back, excuse me", options: ["Just leave", "I'll be right back, excuse me", "Bye everyone"] },
+            { q: "Should you 'reach' across others for salt?", a: "No, ask someone to pass it", options: ["Yes, quickly", "No, ask someone to pass it", "Stand up"] }
+        ],
+        "18": [ // Exploring Local Area with Concierge
+            { q: "What can a 'concierge' help with?", a: "Activity bookings and local maps", options: ["Cooking meals", "Activity bookings and local maps", "Cleaning the room"] },
+            { q: "What are 'hidden gems'?", a: "Less known but great local spots", options: ["Shiny rocks", "Less known but great local spots", "Expensive malls"] },
+            { q: "What is a 'tourist trap'?", a: "Overpriced spots aimed at tourists", options: ["A literal trap", "Overpriced spots aimed at tourists", "A park"] },
+            { q: "How to get 'local' recommendations?", a: "Ask the hotel staff or locals", options: ["Read only big ads", "Ask the hotel staff or locals", "Follow any crowd"] },
+            { q: "What is 'off the beaten path'?", a: "Places not commonly visited by tourists", options: ["A dangerous road", "Places not commonly visited by tourists", "The airport"] },
+            { q: "What are 'opening hours' for attractions?", a: "The times you can visit them", options: ["The prices", "The times you can visit them", "The location"] },
+            { q: "A 'landmark' is:", a: "A significant historical or cultural site", options: ["A piece of dirt", "A significant historical or cultural site", "A parking lot"] },
+            { q: "What is 'local etiquette'?", a: "Cultural norms and manners of the area", options: ["The local language", "Cultural norms and manners of the area", "The local food"] },
+            { q: "Why use a 'hotel map'?", a: "To find your way and marked locations", options: ["To play games", "To find your way and marked locations", "To wrap food"] }
+        ],
+        "19": [ // Feedback and Management
+            { q: "What is a 'feedback form'?", a: "A document to rate your experience", options: ["A menu", "A document to rate your experience", "The bill"] },
+            { q: "What is a 'review' on TripAdvisor/Google?", a: "An online rating of the service", options: ["A personal diary", "An online rating of the service", "A private letter"] },
+            { q: "How to give 'constructive' feedback?", a: "Be specific and polite about issues", options: ["Be rude and general", "Be specific and polite about issues", "Don't say anything"] },
+            { q: "What is a 'manager's' role?", a: "Overseeing staff and handling issues", options: ["Cooking food", "Overseeing staff and handling issues", "Cleaning tables"] },
+            { q: "What's an 'online reputation'?", a: "How the business is perceived on the web", options: ["The price of stars", "How the business is perceived on the web", "The staff list"] },
+            { q: "What is a 'satisfaction survey'?", a: "A list of questions about your stay", options: ["A test", "A list of questions about your stay", "A booking form"] },
+            { q: "What is a 'complimentary' gesture for a bad stay?", a: "A discount or free amenitity", options: ["A bill increase", "A discount or free amenitity", "An apology only"] },
+            { q: "What is 'customer retention'?", a: "Keeping customers coming back", options: ["Firing staff", "Keeping customers coming back", "Closing early"] },
+            { q: "What is a 'VIP' guest?", a: "A very important person", options: ["A regular guest", "A very important person", "A loud guest"] }
+        ],
+        "20": [ // Final Check-out and Departure
+            { q: "What is 'check-out' time?", a: "The time you must leave the room", options: ["The time you arrive", "The time you must leave the room", "When the gym closes"] },
+            { q: "What is a 'final bill' or 'folio'?", a: "A summary of all room and extra charges", options: ["A menu", "A summary of all room and extra charges", "A feedback form"] },
+            { q: "Where to leave the 'room key'?", a: "At the front desk or in the drop box", options: ["On the bed", "At the front desk or in the drop box", "Take it with you"] },
+            { q: "What is 'express check-out'?", a: "Leaving without waiting at the desk", options: ["Running away", "Leaving without waiting at the desk", "Staying late"] },
+            { q: "What's a 'luggage storage' service?", a: "Storing bags after check-out before departure", options: ["Buying new bags", "Storing bags after check-out before departure", "Lost and found"] },
+            { q: "Should you 'check' the room before leaving?", a: "Yes, to avoid leaving items behind", options: ["No, it's fine", "Yes, to avoid leaving items behind", "Only the fridge"] },
+            { q: "What is a 'departure' shuttle?", a: "Transport to the airport/station", options: ["Arriving bus", "Transport to the airport/station", "A tour bus"] },
+            { q: "What is a 'loyalty program'?", a: "A system for rewarding repeat guests", options: ["A secret club", "A system for rewarding repeat guests", "A tax"] },
+            { q: "What is the 'last' step of departure?", a: "Settling the bill and returning keys", options: ["Ordering breakfast", "Settling the bill and returning keys", "Going to the spa"] }
+        ]
+    };
+
+    questions = allQuestions[lessonNum] || [];
+
+    const sentences = {
+        correct: [
+            "Excellent!", "Correct!", "Well done!", "Great job!", "Spot on!", "Perfect!", "Nice work!", "You're right!", "Good answer!", "Bravo!",
+            "Superb!", "Fantastic!", "Outstanding!", "Amazing!", "Keep it up!", "Awesome!", "Brilliant!", "Impressive!", "Top notch!", "Way to go!"
+        ],
+        incorrect: [
+            "Try again!", "Incorrect!", "Wrong!", "Not quite!", "Oops!", "Better luck next time!", "Nope!", "That's not right!", "Keep trying!",
+            "Close, but no!", "Sorry!", "Not correct!", "Try harder!", "No luck!", "Wrong answer!", "Guess again!", "Not there yet!", "Almost!",
+            "Wrong way!", "Try once more!"
+        ]
+    };
+
+    const quizContainer = document.getElementById('quiz-container');
+    let score = 0;
+    let answeredCount = 0;
+
+    let voicesLoaded = false;
+    let voices = [];
+
+    speechSynthesis.onvoiceschanged = () => {
+        voices = speechSynthesis.getVoices();
+        voicesLoaded = true;
+    };
+
+    let audioContext;
+    function initAudio() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playSound(frequency, duration) {
+        if (!audioContext) initAudio();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+    }
+
+    function speakRandomSentence(isCorrect) {
+        const array = isCorrect ? sentences.correct : sentences.incorrect;
+        const sentence = array[Math.floor(Math.random() * array.length)];
+        const utterance = new SpeechSynthesisUtterance(sentence);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        utterance.pitch = 0.5;
+        if (voicesLoaded) {
+            const maleVoice = voices.find(voice => voice.name.toLowerCase().includes('male') || voice.name.toLowerCase().includes('robot'));
+            if (maleVoice) utterance.voice = maleVoice;
+        }
+        speechSynthesis.speak(utterance);
+    }
+
+    function initQuiz() {
+        if(!quizContainer) return;
+        questions.forEach((item, i) => {
+            const shuffledOptions = [...item.options].sort(() => Math.random() - 0.5);
+            const card = document.createElement('div');
+            card.className = 'quiz-item';
+            card.innerHTML = `
+                <p><strong>Question ${i+1}:</strong> ${item.q}</p>
+                <div class="options-grid" id="q-grid-${i}">
+                    ${shuffledOptions.map(opt => `<button class="option-btn" onclick="handleChoice(this, ${i}, '${opt}')">${opt}</button>`).join('')}
+                </div>
+            `;
+            quizContainer.appendChild(card);
+        });
+    }
+
+    function handleChoice(btn, qIdx, selected) {
+        const correct = questions[qIdx].a;
+        const grid = document.getElementById(`q-grid-${qIdx}`);
+        const btns = grid.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+        btn.classList.add('clicked');
+
+        setTimeout(() => {
+            btn.classList.remove('clicked');
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score++;
+                playSound(800, 0.5);
+                speakRandomSentence(true);
+            } else {
+                btn.classList.add('wrong');
+                btns.forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
+                playSound(300, 0.5);
+                speakRandomSentence(false);
+            }
+            answeredCount++;
+            if (answeredCount === questions.length) {
+                const res = document.getElementById('final-result');
+                if (res) {
+                    res.style.display = 'block';
+                    res.innerHTML = `🌟 Completed! Score: ${score} / ${questions.length}`;
+                }
+            }
+        }, 500);
+    }
+
+    initQuiz();
+    window.handleChoice = handleChoice;
+
+    // Back to top functionality
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'block';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ─── Active nav link indicator ───────────────────────────────────────────
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const href = link.getAttribute('href');
+        // Match exact filename or anchor on index page
+        if (href === currentPage ||
+            (currentPage === 'index.html' && href === 'index.html') ||
+            href === currentPage.replace('index.html', '#lessons')) {
+            link.classList.add('active');
+        }
+        // For lesson pages, also keep "All Lessons" active feel — skip to avoid double highlight
+    });
+});
