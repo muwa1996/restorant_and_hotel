@@ -482,15 +482,76 @@ document.addEventListener('DOMContentLoaded', function () {
         "19": "Welcome to Lesson 19. Today's topic is The Art of Upselling and Revenue Communication. Hospitality is a business, and your ability to drive revenue is directly linked to your professional success. However, 'Upselling' in a luxury environment is about enhancement, not pressure. This lesson focuses on 'The Language of Suggestion'. You will learn to move from 'Do you want...?' to 'Might I suggest...?', using evocative adjectives to make premium options irresistible. We'll cover 'Menu Upselling'—suggesting a side dish that perfectly complements the main, or a dessert wine that elevates the final course. We also explore 'Front-Desk Upselling'—how to present a 'Suite Upgrade' by highlighting the view, the space, or the exclusive amenities. You will master the 'Value Proposition'—explaining why the premium option is worth the extra cost. By the end of this session, you will see upselling as a service skill that improves the guest's experience while simultaneously hitting your department's financial targets.",
         "20": "Welcome to Lesson 20. Today's topic is Career Development and Professional English for Advancement. In our final lesson, we shift our focus from serving guests to serving your own career. This session, titled 'The Path to Leadership', covers the language of professional growth in the hospitality industry. We will explore the vocabulary of 'Management and Supervision'—from 'Staff Scheduling' and 'Cost-Control' to 'Performance Reviews' and 'Team-Building'. You will learn the English needed for 'The Promotion Interview', practicing how to describe your hospitality successes and your 'Service Philosophy'. We'll look at 'Corporate Communication'—how to write professional emails to head office and how to present 'Service Scores' at a team meeting. We also discuss 'Personal Branding'—how to position yourself as an expert in your field. This lesson is the capstone of our course, designed to give you the linguistic tools and the professional confidence to move from the floor or the front desk into the ranks of hospitality management."
     };
+    const pageAudioData = {
+        "index.html": "Welcome to our academy. Master professional hospitality English for service excellence.",
+        "about.html": "Learn about our mission to empower hospitality professionals with language.",
+        "resources.html": "Explore helpful tools and guides to support your professional growth.",
+        "gallery.html": "View our high-quality facilities and professional hospitality environments in action.",
+        "faq.html": "Find answers to common questions about our hospitality English courses.",
+        "support.html": "Contact our support team for any assistance with your learning.",
+        "events.html": "Stay updated on upcoming workshops and networking events for professionals.",
+        "blog.html": "Read latest insights and stories from the world of hospitality.",
+        "community.html": "Join our community of dedicated hospitality professionals and share experiences."
+    };
+    function initPageAudio() {
+        const title = document.querySelector('.topic-title');
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const pageText = pageAudioData[currentPage];
+
+        if (!title || !pageText) return;
+
+        let container = document.querySelector('.topic-title-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'topic-title-container';
+            title.parentNode.insertBefore(container, title);
+            container.appendChild(title);
+        }
+
+        if (container.querySelector('.audio-btn-page')) return;
+
+        const playBtn = document.createElement('button');
+        playBtn.className = 'audio-btn audio-btn-page';
+        playBtn.innerHTML = '🔊';
+        playBtn.title = 'Listen to Page Introduction';
+        container.appendChild(playBtn);
+
+        let isPlaying = false;
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                speechSynthesis.cancel();
+                isPlaying = false;
+                playBtn.innerHTML = '🔊';
+            } else {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(pageText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+
+                utterance.onend = () => {
+                    isPlaying = false;
+                    playBtn.innerHTML = '🔊';
+                };
+
+                speechSynthesis.speak(utterance);
+                isPlaying = true;
+                playBtn.innerHTML = '⏹️';
+            }
+        });
+    }
 
     function initLessonAudio() {
         const title = document.querySelector('.topic-title');
         // Extract lesson number from the page title (e.g., "Lesson 1: ...")
-        const lessonMatch = document.title.match(/Lesson (\d+):/i);
-        const lNum = lessonMatch ? lessonMatch[1] : lessonNum;
+        const lessonMatch = document.title.match(/Lesson\s+(\d+):/i);
+
+        if (!title || !lessonMatch) return;
+
+        const lNum = lessonMatch[1];
         const lessonText = lessonAudioData[lNum];
 
-        if (!title || !lessonText) return;
+        if (!lessonText) return;
 
         // Create the container if it doesn't exist
         let container = document.querySelector('.topic-title-container');
@@ -538,4 +599,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     initLessonAudio();
+    initPageAudio();
 });
